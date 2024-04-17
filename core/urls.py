@@ -1,14 +1,15 @@
+from core.views import Home, ProfileList, ProfileCreate,Watch,ShowMovieDetail,ShowMovie
 from django.urls import path
-from . import views
+
+app_name='core'
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('login', views.login, name='login'),
-    path('signup', views.signup, name='signup'),
-    path('logout', views.logout, name='logout'),
-    path('movie/<str:pk>/', views.movie, name='movie'),
-    path('genre/<str:pk>/', views.genre, name='genre'),
-    path('my-list', views.my_list, name='my-list'),
-    path('add-to-list', views.add_to_list, name='add-to-list'),
-    path('search', views.search, name='search'),
+    path('',Home.as_view()),
+    path('profile/',ProfileList.as_view(),name='profile_list'),
+    path('profile/create/',ProfileCreate.as_view(),name='profile_create'),
+    path('watch/<str:profile_id>/',Watch.as_view(),name='watch'),
+    path('movie/detail/<str:movie_id>/',ShowMovieDetail.as_view(),name='show_det'),
+    path('movie/play/<str:movie_id>/',ShowMovie.as_view(),name='play')
 ]
+
+

@@ -1,37 +1,45 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 import uuid
-from django.conf import settings
 
-# Create your models here.
-class Movie(models.Model):
+AGE_CHOICES=(
+    ('All','All'),
+    ('Kids','Kids')
+)
 
-    GENRE_CHOICES = [
-        ('action', 'Action'),
-        ('comedy', 'Comedy'),
-        ('drama', 'Drama'),
-        ('horror', 'Horror'),
-        ('romance', 'Romance'),
-        ('science_fiction', 'Science Fiction'),
-        ('fantasy', 'Fantasy'),
-    ]
+MOVIE_TYPE=(
+    ('single','Single'),
+    ('seasonal','Seasonal')
+)
 
-    uu_id = models.UUIDField(default=uuid.uuid4)
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    release_date = models.DateField()
-    genre = models.CharField(max_length=100, choices=GENRE_CHOICES)
-    length = models.PositiveIntegerField()
-    image_card = models.ImageField(upload_to='movie_images/')
-    image_cover = models.ImageField(upload_to='movie_images/')
-    video = models.FileField(upload_to='movie_videos/')
-    movie_views = models.IntegerField(default=0)
+class CustomUser(AbstractUser):
+    profiles=models.ManyToManyField('Profile')
+
+
+class Profile(models.Model):
+    name=models.CharField(max_length=225)
+    age_limit=models.CharField(max_length=5,choices=AGE_CHOICES)
+    uuid=models.UUIDField(default=uuid.uuid4,unique=True)
+
 
     def __str__(self):
-        return self.title
+        return self.name +" "+self.age_limit
+
+class Movie(models.Model):
+    title:str=models.CharField(max_length=225)
+    description:str=models.TextField()
+    created =models.DateTimeField(auto_now_add=True)
+    uuid=models.UUIDField(default=uuid.uuid4,unique=True)
+    type=models.CharField(max_length=10,choices=MOVIE_TYPE)
+    videos=models.ManyToManyField('Video')
+    flyer=models.ImageField(upload_to='flyers',blank=True,null=True)
+    age_limit=models.CharField(max_length=5,choices=AGE_CHOICES,blank=True,null=True)
+
+class Video(models.Model):
+    title:str = models.CharField(max_length=225,blank=True,null=True)
+    file=models.FileField(upload_to='movies')
     
-class MovieList(models.Model):
-    owner_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    
+
+    
+
